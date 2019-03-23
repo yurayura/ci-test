@@ -13,7 +13,7 @@ pipeline {
         stage('build the artifacts') {
             steps {
                 echo 'Building...'
-                dir('./build') {
+                dir('.build') {
                     sh 'docker-compose build --force-rm --no-cache --parallel'
                 }
             }
@@ -22,8 +22,9 @@ pipeline {
         stage('publish the artifacts') {
             steps {
                 echo 'Publishing...'
-                dir('./build') {
+                dir('.build') {
                     // sh 'docker-compose push'
+                    echo '... docker-compose push'
                 }
             }
         }
