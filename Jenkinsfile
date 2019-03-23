@@ -32,6 +32,10 @@ pipeline {
     post {
         success {
             // cleanWs()
+            echo 'success'
+        }
+        failure {
+            echo 'fail'
         }
     }
 }
