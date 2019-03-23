@@ -1,0 +1,16 @@
+version: '3.4'
+
+x-common:
+  service:
+    build:
+      args: &common-args
+        github_repository: ${github_repository}
+
+services:
+  test:
+    image: ${docker_registry}test${docker_tag}
+    build:
+      context: ../base/test
+      args:
+        <<: *common-args
+        version: ${test_version}

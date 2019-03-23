@@ -1,0 +1,5 @@
+version: '3.4'
+
+services:
+  test:
+    image: ${docker_registry}test${docker_tag}
