@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('retrieve artifacts from github') {
+            steps {
+                echo 'Retrieving...'
+                deleteDir()
+                checkout scm
+            }
+        }
+
+        stage('build the artifacts') {
+            steps {
+                echo 'Building...'
+                dir('./build') {
+                    sh 'docker-compose build --force-rm --no-cache --parallel'
+                }
+            }
+        }
+
+        stage('publish the artifacts') {
+            steps {
+                echo 'Publishing...'
+                dir('./build') {
+                    // sh 'docker-compose push'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // cleanWs()
+        }
+    }
+}
