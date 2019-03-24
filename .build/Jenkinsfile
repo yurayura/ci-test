@@ -23,8 +23,7 @@ pipeline {
             steps {
                 echo 'Publishing...'
                 dir('.build') {
-                    // sh 'docker-compose push'
-                    echo '... docker-compose push'
+                    sh 'docker-compose push'
                 }
             }
         }
