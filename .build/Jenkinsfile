@@ -23,7 +23,17 @@ pipeline {
             steps {
                 echo 'Publishing...'
                 dir('.build') {
-                    sh 'docker-compose push'
+                    withCredentials([[
+                        $class: 'UsernamePasswordMultiBinding',
+                        credentialsId: 'AWS_ACCESS_KEY', 
+                        usernameVariable: 'awsAccessKeyId', 
+                        passwordVariable: 'awsSecretAccessKey']]) {
+                        withEnv([
+                            'AWS_ACCESS_KEY_ID=${awsAccessKeyId}', 
+                            'AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}']) {
+                            sh 'docker-compose push'
+                        }
+                    }
                 }
             }
         }
