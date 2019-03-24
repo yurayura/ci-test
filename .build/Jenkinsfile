@@ -2,9 +2,26 @@ pipeline {
     agent any
 
     stages {
+        stage('prepare an environment') {
+            steps {
+                script {
+                    try {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'AWS_ACCESS_KEY', 
+                            usernameVariable: 'awsAccessKeyId', 
+                            passwordVariable: 'awsSecretAccessKey'
+                        )]) {
+                            env.AWS_ACCESS_KEY_ID = env.awsAccessKeyId
+                            env.AWS_SECRET_ACCESS_KEY = env.awsSecretAccessKey
+                        }
+                    }
+                    catch(e) {}
+                }
+            }
+        }
+
         stage('retrieve artifacts from github') {
             steps {
-                echo 'Retrieving...'
                 deleteDir()
                 checkout scm
             }
@@ -12,7 +29,6 @@ pipeline {
 
         stage('build the artifacts') {
             steps {
-                echo 'Building...'
                 dir('.build') {
                     sh 'docker-compose build --force-rm --no-cache --parallel'
                 }
@@ -21,19 +37,8 @@ pipeline {
 
         stage('publish the artifacts') {
             steps {
-                echo 'Publishing...'
                 dir('.build') {
-                    withCredentials([[
-                        $class: 'UsernamePasswordMultiBinding',
-                        credentialsId: 'AWS_ACCESS_KEY', 
-                        usernameVariable: 'awsAccessKeyId', 
-                        passwordVariable: 'awsSecretAccessKey']]) {
-                        withEnv([
-                            'AWS_ACCESS_KEY_ID=${awsAccessKeyId}', 
-                            'AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}']) {
-                            sh 'docker-compose push'
-                        }
-                    }
+                    sh 'docker-compose push'
                 }
             }
         }
